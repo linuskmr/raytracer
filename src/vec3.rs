@@ -193,8 +193,8 @@ mod tests {
 
     #[test]
     fn cross() {
-        let v1 = Vec3::new(1.0, 2.0, 3.0);
-        let v2 = Vec3::new(4.0, 5.0, 6.0);
+        let v1 = Vec3(1.0, 2.0, 3.0);
+        let v2 = Vec3(4.0, 5.0, 6.0);
         let v3 = v1.cross(v2);
         assert_eq!(v3.x(), -3.0);
         assert_eq!(v3.y(), 6.0);
