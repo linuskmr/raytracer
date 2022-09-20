@@ -27,11 +27,11 @@ mod tests {
 	#[test]
 	fn at() {
 		let ray = Ray {
-			origin: Vec3(0.0, 0.0, 0.0),
-			direction: Vec3(1.0, 0.0, 0.0),
+			origin: Vec3 { x: 0.0, y: 0.0, z: 0.0 },
+			direction: Vec3 { x: 1.0, y: 0.0, z: 0.0 },
 		};
-		assert_eq!(ray.at(0.0), Vec3(0.0, 0.0, 0.0));
-		assert_eq!(ray.at(1.0), Vec3(1.0, 0.0, 0.0));
-		assert_eq!(ray.at(2.0), Vec3(2.0, 0.0, 0.0));
+		assert_eq!(ray.at(0.0), Vec3 { x: 0.0, y: 0.0, z: 0.0 });
+		assert_eq!(ray.at(1.0), Vec3 { x: 1.0, y: 0.0, z: 0.0 });
+		assert_eq!(ray.at(2.0), Vec3 { x: 2.0, y: 0.0, z: 0.0 });
 	}
 }

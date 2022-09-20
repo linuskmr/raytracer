@@ -118,8 +118,8 @@ mod tests {
 
 	#[test]
 	fn add() {
-		let v1 = Vec3(1.0, 2.0, 3.0);
-		let v2 = Vec3(4.0, 5.0, 6.0);
+		let v1 = Vec3 { x: 1.0, y: 2.0, z: 3.0 };
+		let v2 = Vec3 { x: 4.0, y: 5.0, z: 6.0 };
 		let v3 = v1 + v2;
 		assert_eq!(v3.x, 5.0);
 		assert_eq!(v3.y, 7.0);
@@ -128,8 +128,8 @@ mod tests {
 
 	#[test]
 	fn sub() {
-		let v1 = Vec3(1.0, 2.0, 3.0);
-		let v2 = Vec3(4.0, 5.0, 6.0);
+		let v1 = Vec3 { x: 1.0, y: 2.0, z: 3.0 };
+		let v2 = Vec3 { x: 4.0, y: 5.0, z: 6.0 };
 		let v3 = v1 - v2;
 		assert_eq!(v3.x, -3.0);
 		assert_eq!(v3.y, -3.0);
@@ -138,8 +138,8 @@ mod tests {
 
 	#[test]
 	fn mul() {
-		let v1 = Vec3(1.0, 2.0, 3.0);
-		let v2 = Vec3(4.0, 5.0, 6.0);
+		let v1 = Vec3 { x: 1.0, y: 2.0, z: 3.0 };
+		let v2 = Vec3 { x: 4.0, y: 5.0, z: 6.0 };
 		let v3 = v1 * v2;
 		assert_eq!(v3.x, 4.0);
 		assert_eq!(v3.y, 10.0);
@@ -148,7 +148,7 @@ mod tests {
 
 	#[test]
 	fn mul_scalar() {
-		let v1 = Vec3(1.0, 2.0, 3.0);
+		let v1 = Vec3 { x: 1.0, y: 2.0, z: 3.0 };
 		let v2 = v1 * 2.0;
 		assert_eq!(v2.x, 2.0);
 		assert_eq!(v2.y, 4.0);
@@ -157,7 +157,7 @@ mod tests {
 
 	#[test]
 	fn div() {
-		let v1 = Vec3(1.0, 2.0, 3.0);
+		let v1 = Vec3 { x: 1.0, y: 2.0, z: 3.0 };
 		let v2 = v1 / 2.0;
 		assert_eq!(v2.x, 0.5);
 		assert_eq!(v2.y, 1.0);
@@ -166,7 +166,7 @@ mod tests {
 
 	#[test]
 	fn neg() {
-		let v1 = Vec3(1.0, 2.0, 3.0);
+		let v1 = Vec3 { x: 1.0, y: 2.0, z: 3.0 };
 		let v2 = -v1;
 		assert_eq!(v2.x, -1.0);
 		assert_eq!(v2.y, -2.0);
@@ -175,27 +175,27 @@ mod tests {
 
 	#[test]
 	fn length() {
-		let v1 = Vec3(1.0, 2.0, 3.0);
+		let v1 = Vec3 { x: 1.0, y: 2.0, z: 3.0 };
 		assert_eq!(v1.length(), 3.7416573867739413);
 	}
 
 	#[test]
 	fn squared_length() {
-		let v1 = Vec3(1.0, 2.0, 3.0);
+		let v1 = Vec3 { x: 1.0, y: 2.0, z: 3.0 };
 		assert_eq!(v1.squared_length(), 14.0);
 	}
 
 	#[test]
 	fn dot() {
-		let v1 = Vec3(1.0, 2.0, 3.0);
-		let v2 = Vec3(4.0, 5.0, 6.0);
+		let v1 = Vec3 { x: 1.0, y: 2.0, z: 3.0 };
+		let v2 = Vec3 { x: 4.0, y: 5.0, z: 6.0 };
 		assert_eq!(v1.dot(v2), 32.0);
 	}
 
 	#[test]
 	fn cross() {
-		let v1 = Vec3(1.0, 2.0, 3.0);
-		let v2 = Vec3(4.0, 5.0, 6.0);
+		let v1 = Vec3 { x: 1.0, y: 2.0, z: 3.0 };
+		let v2 = Vec3 { x: 4.0, y: 5.0, z: 6.0 };
 		let v3 = v1.cross(v2);
 		assert_eq!(v3.x, -3.0);
 		assert_eq!(v3.y, 6.0);
@@ -204,7 +204,7 @@ mod tests {
 
 	#[test]
 	fn unit_vector() {
-		let v1 = Vec3(1.0, 2.0, 3.0);
+		let v1 = Vec3 { x: 1.0, y: 2.0, z: 3.0 };
 		let v2 = v1.unit_vector();
 		assert_eq!(v2.x, 0.2672612419124244);
 		assert_eq!(v2.y, 0.5345224838248488);
@@ -213,7 +213,7 @@ mod tests {
 
 	#[test]
 	fn unit_vector_length() {
-		let v1 = Vec3(1.0, 2.0, 3.0);
+		let v1 = Vec3 { x: 1.0, y: 2.0, z: 3.0 };
 		let v2 = v1.unit_vector();
 		assert_eq!(v2.length(), 1.0);
 	}

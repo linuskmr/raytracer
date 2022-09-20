@@ -22,20 +22,20 @@ mod tests {
 	fn hittable_list() {
 		let hittables: Vec<Box<dyn Hittable>> = vec![
 			Box::new(Sphere {
-				center: Vec3(0.0, 0.0, 0.0),
+				center: Vec3 { x: 0.0, y: 0.0, z: 0.0 },
 				radius: 1.0,
 			}),
 			Box::new(Sphere {
-				center: Vec3(0.0, 0.0, 2.0),
+				center: Vec3 { x: 0.0, y: 0.0, z: 2.0 },
 				radius: 1.0,
 			}),
 		];
 		let ray = Ray {
-			origin: Vec3(0.0, 0.0, -5.0),
-			direction: Vec3(0.0, 0.0, 1.0),
+			origin: Vec3 { x: 0.0, y: 0.0, z: -5.0 },
+			direction: Vec3 { x: 0.0, y: 0.0, z: 1.0 },
 		};
 
 		let hit = hittables.as_slice().hits(ray, 0.0, f64::INFINITY);
-		assert_eq!(hit.map(|h| h.point), Some(Vec3(0.0, 0.0, -1.0)));
+		assert_eq!(hit.map(|h| h.point), Some(Vec3 { x: 0.0, y: 0.0, z: -1.0 }));
 	}
 }

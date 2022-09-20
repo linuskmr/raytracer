@@ -49,12 +49,12 @@ mod tests {
 	#[test]
 	fn hits() {
 		let sphere = Sphere {
-			center: Vec3(0.0, 0.0, 0.0),
+			center: Vec3 { x: 0.0, y: 0.0, z: 0.0 },
 			radius: 1.0,
 		};
 		let ray = Ray {
-			origin: Vec3(0.0, 0.0, -5.0),
-			direction: Vec3(0.0, 0.0, 1.0),
+			origin: Vec3 { x: 0.0, y: 0.0, z: -5.0 },
+			direction: Vec3 { x: 0.0, y: 0.0, z: 1.0 },
 		};
 		assert!(sphere.hits(ray, 0.0, 1000.0).is_some());
 	}
@@ -62,12 +62,12 @@ mod tests {
 	#[test]
 	fn misses() {
 		let sphere = Sphere {
-			center: Vec3(0.0, 0.0, 0.0),
+			center: Vec3 { x: 0.0, y: 0.0, z: 0.0 },
 			radius: 1.0,
 		};
 		let ray = Ray {
-			origin: Vec3(0.0, 0.0, -5.0),
-			direction: Vec3(0.0, 1.0, 0.0),
+			origin: Vec3 { x: 0.0, y: 0.0, z: -5.0 },
+			direction: Vec3 { x: 0.0, y: 1.0, z: 0.0 },
 		};
 		assert!(sphere.hits(ray, 0.0, 1000.0).is_none());
 	}

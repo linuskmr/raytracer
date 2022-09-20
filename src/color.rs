@@ -30,7 +30,7 @@ mod tests {
 
 	#[test]
 	fn display() {
-		assert_eq!(Color::WHITE.to_string(), "#ffffff");
-		assert_eq!(Color::BLACK.to_string(), "#000000");
+		assert_eq!(Color { r: 255, g: 255, b: 255 }.to_string(), "#ffffff");
+		assert_eq!(Color { r: 0, g: 0, b: 0 }.to_string(), "#000000");
 	}
 }
