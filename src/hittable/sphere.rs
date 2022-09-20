@@ -1,4 +1,5 @@
-use crate::{Ray, Vec3};
+use crate::{hittable, Ray, Vec3};
+use crate::hittable::{Hit, Hittable};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Sphere {
@@ -6,8 +7,8 @@ pub struct Sphere {
 	pub radius: f64,
 }
 
-impl Sphere {
-	pub fn hits(&self, ray: &Ray) -> Option<f64> {
+impl Hittable for Sphere {
+	fn hits(&self, ray: Ray, t_min: f64, t_max: f64) -> Option<Hit> {
 		let oc = ray.origin - self.center;
 		let a = ray.direction.squared_length();
 		let half_b = oc.dot(ray.direction);
@@ -19,14 +20,27 @@ impl Sphere {
 			return None;
 		}
 
-		// If discriminant is zero, there is one real root, so return true as ray hits sphere
-		// If discriminant is positive, there are two real roots, so return true as ray hits sphere
-		let t1 = (-half_b - discriminant.sqrt()) / a; // Way used by tutorial
-		let t2 = (-half_b + discriminant.sqrt()) / a;
-		assert!(t1 < t2, "t1 (tutorial) should be less than t2");
-		Some(t1)
+		// Find the nearest root that lies in the acceptable range
+		let discriminant_root = discriminant.sqrt();
+		let t1 = (-half_b - discriminant_root) / a;
+		let t2 = (-half_b + discriminant_root) / a;
+
+		let t = if (t_min..t_max).contains(&t1) {
+			t1
+		} else if (t_min..t_max).contains(&t2) {
+			t2
+		} else {
+			return None;
+		};
+
+		let point = ray.at(t);
+		let outward_normal = (point - self.center) / self.radius;
+		let intersection_side = hittable::calc_intersection_side(ray, outward_normal);
+		let normal = hittable::calc_normal(intersection_side, outward_normal);
+		Some(Hit { point, normal, t, intersection_side })
 	}
 }
+
 
 #[cfg(test)]
 mod tests {
@@ -42,7 +56,7 @@ mod tests {
 			origin: Vec3(0.0, 0.0, -5.0),
 			direction: Vec3(0.0, 0.0, 1.0),
 		};
-		assert!(sphere.hits(&ray).is_some());
+		assert!(sphere.hits(ray, 0.0, 1000.0).is_some());
 	}
 
 	#[test]
@@ -55,6 +69,6 @@ mod tests {
 			origin: Vec3(0.0, 0.0, -5.0),
 			direction: Vec3(0.0, 1.0, 0.0),
 		};
-		assert!(sphere.hits(&ray).is_none());
+		assert!(sphere.hits(ray, 0.0, 1000.0).is_none());
 	}
 }

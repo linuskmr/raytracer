@@ -2,7 +2,7 @@ use std::fmt;
 
 use crate::Vec3;
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Copy, PartialEq)]
 pub struct Ray {
 	pub origin: Vec3,
 	pub direction: Vec3,

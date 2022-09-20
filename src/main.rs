@@ -3,20 +3,21 @@ use std::fs::File;
 use std::io::BufWriter;
 
 use raytracer::Color;
+use raytracer::Hittable;
 use raytracer::Image;
 use raytracer::Ray;
 use raytracer::Sphere;
 use raytracer::Vec3;
 
-fn ray_color(ray: &Ray) -> Color {
+fn ray_color(ray: Ray) -> Color {
 	// Hit sphere?
 	{
 		let sphere = Sphere {
 			center: Vec3(0.0, 0.0, -1.0),
 			radius: 0.5,
 		};
-		if let Some(t) = sphere.hits(ray) {
-			let normal = (ray.at(t) - sphere.center).unit_vector();
+		if let Some(hit) = sphere.hits(ray, 0.0, 10000.0) {
+			let normal = (ray.at(hit.t) - sphere.center).unit_vector();
 			let color_vec = (normal + Vec3(1.0, 1.0, 1.0)) * 0.5;
 			return Color::from(color_vec);
 		}
@@ -37,7 +38,7 @@ fn ray_color(ray: &Ray) -> Color {
 fn main() -> Result<(), Box<dyn Error>> {
 	// Image
 	let aspect_ratio = 16.0 / 9.0;
-	let image_width = 3840 /*px*/;
+	let image_width = 720 /*px*/;
 	let image_height = (image_width as f64 / aspect_ratio) as usize;
 	let mut image = Image::new(image_width, image_height);
 	dbg!(aspect_ratio, image_width, image_height);
@@ -88,7 +89,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 					target - start
 				},
 			};
-			*pixel = ray_color(&ray);
+			*pixel = ray_color(ray);
 		}
 	}
 	let render_duration = render_start_timestamp.elapsed();
