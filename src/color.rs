@@ -3,26 +3,24 @@ use std::fmt;
 use crate::Vec3;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
-pub struct Color(pub u8, pub u8, pub u8);
-
-
-impl Color {
-	const WHITE: Color = Color(255, 255, 255);
-	const BLACK: Color = Color(0, 0, 0);
+pub struct Color {
+	pub r: u8,
+	pub g: u8,
+	pub b: u8,
 }
 
 impl fmt::Display for Color {
 	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-		write!(f, "#{:02x}{:02x}{:02x}", self.0, self.1, self.2)
+		write!(f, "#{:02x}{:02x}{:02x}", self.r, self.g, self.b)
 	}
 }
 
 impl From<Vec3> for Color {
 	fn from(vec: Vec3) -> Self {
-		let r = (vec.0 * 255.0) as u8;
-		let g = (vec.1 * 255.0) as u8;
-		let b = (vec.2 * 255.0) as u8;
-		Color(r, g, b)
+		let r = (vec.x * 255.999) as u8;
+		let g = (vec.y * 255.999) as u8;
+		let b = (vec.z * 255.999) as u8;
+		Color { r, g, b }
 	}
 }
 

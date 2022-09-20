@@ -10,7 +10,7 @@ pub struct Image {
 impl Image {
 	pub fn new(width: usize, height: usize) -> Self {
 		Self {
-			rows: vec![vec![Color(0, 0, 0); width]; height],
+			rows: vec![vec![Color::default(); width]; height],
 		}
 	}
 
@@ -37,7 +37,7 @@ impl Image {
 		// Image data
 		for row in &self.rows {
 			for pixel in row {
-				writer.write_all(&[pixel.0, pixel.1, pixel.2])?;
+				writer.write_all(&[pixel.r, pixel.g, pixel.b])?;
 			}
 		}
 
@@ -52,7 +52,7 @@ impl Image {
 		// Image data
 		for row in &self.rows {
 			for pixel in row {
-				writer.write_fmt(format_args!("{} {} {}", pixel.0, pixel.1, pixel.2))?;
+				writer.write_fmt(format_args!("{} {} {}", pixel.r, pixel.g, pixel.b))?;
 				writer.write_all(b" ")?;
 			}
 			writer.write_all(b"\n")?;

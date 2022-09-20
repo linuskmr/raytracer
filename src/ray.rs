@@ -2,7 +2,7 @@ use std::fmt;
 
 use crate::Vec3;
 
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, PartialEq, Debug)]
 pub struct Ray {
 	pub origin: Vec3,
 	pub direction: Vec3,
@@ -14,7 +14,7 @@ impl Ray {
 	}
 }
 
-impl fmt::Debug for Ray {
+impl fmt::Display for Ray {
 	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 		write!(f, "Ray({:?} -> {:?})", self.origin, self.direction)
 	}

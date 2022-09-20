@@ -1,5 +1,6 @@
-#![allow(dead_code)]
+// #![allow(dead_code)]
 
+pub use camera::Camera;
 pub use color::Color;
 pub use hittable::{
 	Hit,
@@ -15,5 +16,6 @@ mod vec3;
 mod color;
 mod hittable;
 pub mod ray;
+mod camera;
 
 
