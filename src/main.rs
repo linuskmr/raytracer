@@ -9,30 +9,35 @@ use raytracer::Sphere;
 use raytracer::Vec3;
 
 fn ray_color(ray: &Ray) -> Color {
+	// Hit sphere?
 	{
 		let sphere = Sphere {
 			center: Vec3(0.0, 0.0, -1.0),
 			radius: 0.5,
 		};
-		if sphere.hits(ray) {
-			return Color(255, 0, 0);
+		if let Some(t) = sphere.hits(ray) {
+			let normal = (ray.at(t) - sphere.center).unit_vector();
+			let color_vec = (normal + Vec3(1.0, 1.0, 1.0)) * 0.5;
+			return Color::from(color_vec);
 		}
 	}
 
+	// Hits background
 	let unit_direction = ray.direction.unit_vector();
 	let t = 0.5 * (unit_direction.y() + 1.0);
-	let color = {
+	let color_vec = {
 		let start_value = Vec3(1.0, 1.0, 1.0);
 		let end_value = Vec3(0.5, 0.7, 1.0);
 		start_value * (1.0 - t) + end_value * t
 	};
-	Color((color.0 * 255.0) as u8, (color.1 * 255.0) as u8, (color.2 * 255.0) as u8)
+	Color::from(color_vec)
 }
+
 
 fn main() -> Result<(), Box<dyn Error>> {
 	// Image
 	let aspect_ratio = 16.0 / 9.0;
-	let image_width = 1920 /*px*/;
+	let image_width = 3840 /*px*/;
 	let image_height = (image_width as f64 / aspect_ratio) as usize;
 	let mut image = Image::new(image_width, image_height);
 	dbg!(aspect_ratio, image_width, image_height);
@@ -61,6 +66,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 
 	println!("Rendering image");
+	let render_start_timestamp = std::time::Instant::now();
 	// Render
 	for (y, row) in image.rows.iter_mut().enumerate() {
 		for (x, pixel) in row.iter_mut().enumerate() {
@@ -85,11 +91,16 @@ fn main() -> Result<(), Box<dyn Error>> {
 			*pixel = ray_color(&ray);
 		}
 	}
+	let render_duration = render_start_timestamp.elapsed();
+	println!("Rendered image in {:?}", render_duration);
 
 	println!("Writing image to filesystem");
+	let write_start_timestamp = std::time::Instant::now();
 	let file = File::create("image.ppm")?;
 	let mut file_writer = BufWriter::new(file);
 	image.write_binary_ppm(&mut file_writer)?;
+	let write_duration = write_start_timestamp.elapsed();
+	println!("Wrote image to filesystem in {:?}", write_duration);
 
 	Ok(())
 }

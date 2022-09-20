@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 pub use color::Color;
 pub use image::Image;
 pub use ray::Ray;

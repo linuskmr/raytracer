@@ -1,9 +1,8 @@
 use std::io;
-use std::io::Write;
 
 use crate::color::Color;
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Image {
 	pub rows: Vec<Vec<Color>>,
 }
