@@ -42,7 +42,7 @@ mod tests {
 			origin: Vec3(0.0, 0.0, -5.0),
 			direction: Vec3(0.0, 0.0, 1.0),
 		};
-		assert!(sphere.hits(&ray));
+		assert!(sphere.hits(&ray).is_some());
 	}
 
 	#[test]
@@ -55,6 +55,6 @@ mod tests {
 			origin: Vec3(0.0, 0.0, -5.0),
 			direction: Vec3(0.0, 1.0, 0.0),
 		};
-		assert!(!sphere.hits(&ray));
+		assert!(sphere.hits(&ray).is_none());
 	}
 }
