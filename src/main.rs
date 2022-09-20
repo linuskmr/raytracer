@@ -9,16 +9,11 @@ use raytracer::Ray;
 use raytracer::Sphere;
 use raytracer::Vec3;
 
-fn ray_color(ray: Ray) -> Color {
-	// Hit sphere?
+fn ray_color(ray: Ray, world: &dyn Hittable) -> Color {
+	// Hit something on the world?
 	{
-		let sphere = Sphere {
-			center: Vec3(0.0, 0.0, -1.0),
-			radius: 0.5,
-		};
-		if let Some(hit) = sphere.hits(ray, 0.0, 10000.0) {
-			let normal = (ray.at(hit.t) - sphere.center).unit_vector();
-			let color_vec = (normal + Vec3(1.0, 1.0, 1.0)) * 0.5;
+		if let Some(hit) = world.hits(ray, 0.0, 10000.0) {
+			let color_vec = (hit.normal + Vec3(1.0, 1.0, 1.0)) * 0.5;
 			return Color::from(color_vec);
 		}
 	}
@@ -42,6 +37,18 @@ fn main() -> Result<(), Box<dyn Error>> {
 	let image_height = (image_width as f64 / aspect_ratio) as usize;
 	let mut image = Image::new(image_width, image_height);
 	dbg!(aspect_ratio, image_width, image_height);
+
+	// World
+	let world: Vec<Box<dyn Hittable>> = vec![
+		Box::new(Sphere {
+			center: Vec3(0.0, 0.0, -1.0),
+			radius: 0.5,
+		}),
+		Box::new(Sphere {
+			center: Vec3(0.0, -100.5, -1.0),
+			radius: 100.0,
+		}),
+	];
 
 	// Camera
 	let viewport_height = 2.0;
@@ -89,7 +96,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 					target - start
 				},
 			};
-			*pixel = ray_color(ray);
+			*pixel = ray_color(ray, &world.as_slice());
 		}
 	}
 	let render_duration = render_start_timestamp.elapsed();
