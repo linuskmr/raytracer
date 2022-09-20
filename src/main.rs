@@ -17,6 +17,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 	let image_width = 720 /*px*/;
 	let image_height = (image_width as f64 / aspect_ratio) as usize;
 	let antialiasing_samples_per_pixel = 10;
+	let reflection_depth = 50;
 	let mut image = Image::new(image_width, image_height);
 	dbg!(aspect_ratio, image_width, image_height);
 
@@ -66,9 +67,13 @@ fn main() -> Result<(), Box<dyn Error>> {
 				let horizontal_scalar = random_scalar_sample(x, image_width);
 				let vertical_scalar = random_scalar_sample(y, image_height);
 				let ray = camera.ray(horizontal_scalar, vertical_scalar);
-				color_vec = color_vec + Vec3::from(ray_color(ray, &world.as_slice()));
+				color_vec = color_vec + Vec3::from(ray_color(ray, &world.as_slice(), reflection_depth));
 			}
-			*pixel = Color::from(color_vec / antialiasing_samples_per_pixel as f64);
+			color_vec = color_vec / antialiasing_samples_per_pixel as f64;
+			*pixel = Color::from(color_vec).gamma_corrected();
+		}
+		if y & 0xf == 0 {
+			println!("{}%", y * 100 / image_height);
 		}
 	}
 	let render_duration = render_start_timestamp.elapsed();
@@ -95,10 +100,25 @@ fn random_scalar_sample(iteration: usize, dimension: usize) -> f64 {
 }
 
 
-fn ray_color(ray: Ray, world: &dyn Hittable) -> Color {
+fn ray_color(ray: Ray, world: &dyn Hittable, depth: usize) -> Color {
+	if depth == 0 {
+		// Exceeded the ray bounce limit; no more light is gathered.
+		return Color::default();
+	}
+
 	// Hit something on the world?
-	if let Some(hit) = world.hits(ray, 0.0, 10000.0) {
-		let color_vec = (hit.normal + Vec3 { x: 1.0, y: 1.0, z: 1.0 }) * 0.5;
+	if let Some(hit) = world.hits(ray, 0.0, f64::INFINITY) {
+		let reflection_target = hit.point + hit.normal + Vec3::random_in_unit_sphere();
+		// Light comes from the background. When a ray is reflected often, they path to the background is longer,
+		// so the color is darker.
+		let color_vec = Vec3::from(ray_color(
+			Ray {
+				origin: hit.point,
+				direction: reflection_target - hit.point,
+			},
+			world,
+			depth - 1,
+		)) * 0.8;
 		return Color::from(color_vec);
 	}
 
@@ -112,3 +132,16 @@ fn ray_color(ray: Ray, world: &dyn Hittable) -> Color {
 	};
 	Color::from(color_vec)
 }
+
+
+/*#[derive(Parser, Debug)]
+struct Args {
+	#[clap(short, long, default_value = "720")]
+	image_width: usize,
+
+	#[clap(short, long, default_value = "10")]
+	antialiasing_samples_per_pixel: usize,
+
+	/// Szene description as JSON
+	szene: String,
+}*/

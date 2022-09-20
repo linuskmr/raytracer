@@ -56,7 +56,7 @@ mod tests {
 			origin: Vec3 { x: 0.0, y: 0.0, z: -5.0 },
 			direction: Vec3 { x: 0.0, y: 0.0, z: 1.0 },
 		};
-		assert!(sphere.hits(ray, 0.0, 1000.0).is_some());
+		assert!(sphere.hits(ray, 0.0, f64::INFINITY).is_some());
 	}
 
 	#[test]
@@ -69,6 +69,6 @@ mod tests {
 			origin: Vec3 { x: 0.0, y: 0.0, z: -5.0 },
 			direction: Vec3 { x: 0.0, y: 1.0, z: 0.0 },
 		};
-		assert!(sphere.hits(ray, 0.0, 1000.0).is_none());
+		assert!(sphere.hits(ray, 0.0, f64::INFINITY).is_none());
 	}
 }
