@@ -95,11 +95,15 @@ fn main() -> Result<(), Box<dyn Error>> {
 fn random_scalar_sample(iteration: usize, dimension: usize) -> f64 {
 	// TODO: Deterministic samples
 	assert!(iteration < dimension);
-	let random_scalar_offset: f64 = rand::thread_rng().gen_range(-0.5..0.5);
+	// It's important that the random_scalar_offset goes with the iteration, not the output pixel f64, since
+	// this is not scaled by the viewport width or height.
+	let random_scalar_offset: f64 = rand::thread_rng().gen_range(0.0..1.0);
 	(iteration as f64 + random_scalar_offset) / (dimension as f64 - 1.0)
 }
 
 
+/// Calculates the color for the `ray` by tracing it through the `world`.
+/// The `depth` parameter limits the recursion depth of reflection rays.
 fn ray_color(ray: Ray, world: &dyn Hittable, depth: usize) -> Color {
 	if depth == 0 {
 		// Exceeded the ray bounce limit; no more light is gathered.
@@ -107,7 +111,7 @@ fn ray_color(ray: Ray, world: &dyn Hittable, depth: usize) -> Color {
 	}
 
 	// Hit something on the world?
-	if let Some(hit) = world.hits(ray, 0.0, f64::INFINITY) {
+	if let Some(hit) = world.hits(ray, /*against shadow acne*/0.0001, f64::INFINITY) {
 		let reflection_target = hit.point + hit.normal + Vec3::random_in_unit_sphere();
 		// Light comes from the background. When a ray is reflected often, they path to the background is longer,
 		// so the color is darker.

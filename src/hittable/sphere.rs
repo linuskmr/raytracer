@@ -1,6 +1,9 @@
+//! A sphere is a 3-dimensional object with a center point and a radius, like a ball.
+
 use crate::{hittable, Ray, Vec3};
 use crate::hittable::{Hit, Hittable};
 
+/// A sphere is a 3-dimensional object with a center point and a radius, like a ball.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Sphere {
 	pub center: Vec3,

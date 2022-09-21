@@ -2,6 +2,7 @@ use std::fmt;
 
 use crate::Vec3;
 
+/// Color represented by red, green, and blue components, each in the range 0..255.
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct Color {
 	pub r: u8,
@@ -10,7 +11,8 @@ pub struct Color {
 }
 
 impl Color {
-	/// Gamma-corrects the color with "gamma 2" by .
+	/// Returns the Gamma-corrected color with *Gamma 2* by taking the square root of each
+	/// component in the scale 0.0..1.0.
 	pub fn gamma_corrected(&self) -> Color {
 		Color {
 			r: ((self.r as f64 / u8::MAX as f64).sqrt() * u8::MAX as f64) as u8,

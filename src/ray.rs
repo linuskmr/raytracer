@@ -2,13 +2,17 @@ use std::fmt;
 
 use crate::Vec3;
 
+/// Line segment with a starting point and a direction.
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct Ray {
+	/// Starting point.
 	pub origin: Vec3,
+	/// Direction.
 	pub direction: Vec3,
 }
 
 impl Ray {
+	/// Calculates the point along the ray in `direction` scaled by the factor `t`.
 	pub fn at(&self, t: f64) -> Vec3 {
 		self.origin + (self.direction * t)
 	}

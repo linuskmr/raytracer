@@ -2,7 +2,7 @@ use rand::Rng;
 
 use crate::Color;
 
-/// A vector in the 3-dimensional space.
+/// Vector in the 3-dimensional space.
 #[derive(Copy, Clone, Default, PartialEq, Debug)]
 pub struct Vec3 {
 	pub x: f64,

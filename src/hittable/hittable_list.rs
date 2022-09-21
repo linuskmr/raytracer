@@ -1,3 +1,5 @@
+//! Implements [`Hittable`] for a list of [`Hittable`]s.
+
 use crate::{Hit, Hittable, Ray};
 
 // Implements hittable for a vector of hittable objects (or some sort of reference).
