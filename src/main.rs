@@ -15,10 +15,10 @@ use raytracer::Vec3;
 fn main() -> Result<(), Box<dyn Error>> {
 	// Image
 	let aspect_ratio = 16.0 / 9.0;
-	let image_width = 1920 /*px*/;
+	let image_width = 720 /*px*/;
 	let image_height = (image_width as f64 / aspect_ratio) as usize;
-	let antialiasing_samples_per_pixel = 50;
-	let reflection_depth = 50;
+	let antialiasing_samples_per_pixel = 30;
+	let reflection_depth = 30;
 	let mut image = Image::new(image_width, image_height);
 	dbg!(aspect_ratio, image_width, image_height);
 
@@ -31,10 +31,12 @@ fn main() -> Result<(), Box<dyn Error>> {
 			albedo: Color::from(Vec3 { x: 0.7, y: 0.3, z: 0.3 })
 		});
 		let material_left: Rc<dyn Material> = Rc::new(Metal {
-			albedo: Color::from(Vec3 { x: 0.8, y: 0.5, z: 0.8 })
+			albedo: Color::from(Vec3 { x: 0.8, y: 0.5, z: 0.8 }),
+			fuzziness: 0.05,
 		});
 		let material_right: Rc<dyn Material> = Rc::new(Metal {
-			albedo: Color::from(Vec3 { x: 0.8, y: 0.6, z: 0.2 })
+			albedo: Color::from(Vec3 { x: 0.8, y: 0.6, z: 0.2 }),
+			fuzziness: 1.0,
 		});
 
 		vec![
@@ -161,6 +163,18 @@ fn ray_color(ray: Ray, world: &dyn Hittable, depth: usize) -> Color {
 }
 
 
+/*
+struct Scene {
+    width: u32,
+    height: u32,
+    samples_per_pixel: u32,
+    max_depth: u32,
+    aspect_ratio: f64,
+    image: Image,
+    world: Vec<Box<dyn Hittable>>,
+    camera: Camera,
+}
+ */
 
 /*trait Reflection {
 	fn reflect(&self, normal: Vec3) -> Vec3;
