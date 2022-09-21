@@ -8,7 +8,7 @@ use rand::Rng;
 use raytracer::{Camera, Color};
 use raytracer::hittable::{Hittable, Sphere};
 use raytracer::Image;
-use raytracer::material::{Lambertian, Material, Metal};
+use raytracer::material::{Dielectric, Lambertian, Material, Metal};
 use raytracer::Ray;
 use raytracer::Vec3;
 
@@ -30,13 +30,12 @@ fn main() -> Result<(), Box<dyn Error>> {
 		let material_center: Rc<dyn Material> = Rc::new(Lambertian {
 			albedo: Color::from(Vec3 { x: 0.7, y: 0.3, z: 0.3 })
 		});
-		let material_left: Rc<dyn Material> = Rc::new(Metal {
-			albedo: Color::from(Vec3 { x: 0.8, y: 0.5, z: 0.8 }),
-			fuzziness: 0.05,
+		let material_left: Rc<dyn Material> = Rc::new(Dielectric {
+			index_of_refraction: 1.5,
 		});
 		let material_right: Rc<dyn Material> = Rc::new(Metal {
 			albedo: Color::from(Vec3 { x: 0.8, y: 0.6, z: 0.2 }),
-			fuzziness: 1.0,
+			fuzziness: 0.3,
 		});
 
 		vec![
