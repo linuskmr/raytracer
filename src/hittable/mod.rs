@@ -1,9 +1,12 @@
 //! Components for rays hitting objects.
 
 
+use std::rc::Rc;
+
 pub use sphere::Sphere;
 
 use crate::{Ray, Vec3};
+use crate::material::Material;
 
 pub mod sphere;
 mod hittable_list;
@@ -16,7 +19,7 @@ pub enum IntersectionSide {
 }
 
 /// A hit is a point on a surface that was hit by a [Ray].
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug)]
 pub struct Hit {
 	/// The point at which the ray hit the object.
 	pub point: Vec3,
@@ -26,6 +29,7 @@ pub struct Hit {
 	pub t: f64,
 	/// Whether the ray intersects the the object from the inside or outside.
 	pub intersection_side: IntersectionSide,
+	pub material: Rc<dyn Material>,
 }
 
 /// A trait for objects that can be hit by a ray.

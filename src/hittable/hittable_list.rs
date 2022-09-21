@@ -1,6 +1,6 @@
 //! Implements [`Hittable`] for a list of [`Hittable`]s.
 
-use crate::{Hit, Hittable, Ray};
+use crate::hittable::{Hit, Hittable, Ray};
 
 // Implements hittable for a vector of hittable objects (or some sort of reference).
 impl<H: AsRef<dyn Hittable>> Hittable for &[H] {
@@ -15,7 +15,9 @@ impl<H: AsRef<dyn Hittable>> Hittable for &[H] {
 
 #[cfg(test)]
 mod tests {
-	use crate::{Sphere, Vec3};
+	use std::rc::Rc;
+
+	use crate::{hittable::Sphere, material, Vec3};
 
 	use super::*;
 
@@ -26,10 +28,12 @@ mod tests {
 			Box::new(Sphere {
 				center: Vec3 { x: 0.0, y: 0.0, z: 0.0 },
 				radius: 1.0,
+				material: Rc::new(material::Lambertian::default()),
 			}),
 			Box::new(Sphere {
 				center: Vec3 { x: 0.0, y: 0.0, z: 2.0 },
 				radius: 1.0,
+				material: Rc::new(material::Lambertian::default()),
 			}),
 		];
 		let ray = Ray {

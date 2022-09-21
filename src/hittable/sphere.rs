@@ -1,13 +1,18 @@
 //! A sphere is a 3-dimensional object with a center point and a radius, like a ball.
 
+use std::fmt::Debug;
+use std::rc::Rc;
+
 use crate::{hittable, Ray, Vec3};
 use crate::hittable::{Hit, Hittable};
+use crate::material::Material;
 
 /// A sphere is a 3-dimensional object with a center point and a radius, like a ball.
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug)]
 pub struct Sphere {
 	pub center: Vec3,
 	pub radius: f64,
+	pub material: Rc<dyn Material>,
 }
 
 impl Hittable for Sphere {
@@ -40,13 +45,15 @@ impl Hittable for Sphere {
 		let outward_normal = (point - self.center) / self.radius;
 		let intersection_side = hittable::calc_intersection_side(ray, outward_normal);
 		let normal = hittable::calc_normal(intersection_side, outward_normal);
-		Some(Hit { point, normal, t, intersection_side })
+		Some(Hit { point, normal, t, intersection_side, material: Rc::clone(&self.material) })
 	}
 }
 
 
 #[cfg(test)]
 mod tests {
+	use crate::material;
+
 	use super::*;
 
 	#[test]
@@ -54,6 +61,7 @@ mod tests {
 		let sphere = Sphere {
 			center: Vec3 { x: 0.0, y: 0.0, z: 0.0 },
 			radius: 1.0,
+			material: Rc::new(material::Lambertian::default()),
 		};
 		let ray = Ray {
 			origin: Vec3 { x: 0.0, y: 0.0, z: -5.0 },
@@ -67,6 +75,7 @@ mod tests {
 		let sphere = Sphere {
 			center: Vec3 { x: 0.0, y: 0.0, z: 0.0 },
 			radius: 1.0,
+			material: Rc::new(material::Lambertian::default()),
 		};
 		let ray = Ray {
 			origin: Vec3 { x: 0.0, y: 0.0, z: -5.0 },

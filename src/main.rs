@@ -1,37 +1,65 @@
 use std::error::Error;
 use std::fs::File;
 use std::io::BufWriter;
+use std::rc::Rc;
 
 use rand::Rng;
 
 use raytracer::{Camera, Color};
-use raytracer::Hittable;
+use raytracer::hittable::{Hittable, Sphere};
 use raytracer::Image;
+use raytracer::material::{Lambertian, Material, Metal};
 use raytracer::Ray;
-use raytracer::Sphere;
 use raytracer::Vec3;
 
 fn main() -> Result<(), Box<dyn Error>> {
 	// Image
 	let aspect_ratio = 16.0 / 9.0;
-	let image_width = 720 /*px*/;
+	let image_width = 1920 /*px*/;
 	let image_height = (image_width as f64 / aspect_ratio) as usize;
-	let antialiasing_samples_per_pixel = 10;
+	let antialiasing_samples_per_pixel = 50;
 	let reflection_depth = 50;
 	let mut image = Image::new(image_width, image_height);
 	dbg!(aspect_ratio, image_width, image_height);
 
 	// World
-	let world: Vec<Box<dyn Hittable>> = vec![
-		Box::new(Sphere {
-			center: Vec3 { x: 0.0, y: 0.0, z: -1.0 },
-			radius: 0.5,
-		}),
-		Box::new(Sphere {
-			center: Vec3 { x: 0.0, y: -100.5, z: -1.0 },
-			radius: 100.0,
-		}),
-	];
+	let world: Vec<Box<dyn Hittable>> = {
+		let material_ground: Rc<dyn Material> = Rc::new(Lambertian {
+			albedo: Color::from(Vec3 { x: 0.5, y: 0.5, z: 0.5 })
+		});
+		let material_center: Rc<dyn Material> = Rc::new(Lambertian {
+			albedo: Color::from(Vec3 { x: 0.7, y: 0.3, z: 0.3 })
+		});
+		let material_left: Rc<dyn Material> = Rc::new(Metal {
+			albedo: Color::from(Vec3 { x: 0.8, y: 0.5, z: 0.8 })
+		});
+		let material_right: Rc<dyn Material> = Rc::new(Metal {
+			albedo: Color::from(Vec3 { x: 0.8, y: 0.6, z: 0.2 })
+		});
+
+		vec![
+			Box::new(Sphere {
+				center: Vec3 { x: 0.0, y: -100.5, z: -1.0 },
+				radius: 100.0,
+				material: Rc::clone(&material_ground),
+			}),
+			Box::new(Sphere {
+				center: Vec3 { x: 0.0, y: 0.0, z: -1.0 },
+				radius: 0.5,
+				material: Rc::clone(&material_center),
+			}),
+			Box::new(Sphere {
+				center: Vec3 { x: -1.0, y: 0.0, z: -1.0 },
+				radius: 0.5,
+				material: Rc::clone(&material_left),
+			}),
+			Box::new(Sphere {
+				center: Vec3 { x: -0.3, y: -0.3, z: -0.5 },
+				radius: 0.2,
+				material: Rc::clone(&material_right),
+			}),
+		]
+	};
 
 	// Camera
 	let camera = Camera::default();
@@ -112,18 +140,13 @@ fn ray_color(ray: Ray, world: &dyn Hittable, depth: usize) -> Color {
 
 	// Hit something on the world?
 	if let Some(hit) = world.hits(ray, /*against shadow acne*/0.0001, f64::INFINITY) {
-		let reflection_target = hit.point + hit.normal + Vec3::random_in_unit_sphere();
-		// Light comes from the background. When a ray is reflected often, they path to the background is longer,
-		// so the color is darker.
-		let color_vec = Vec3::from(ray_color(
-			Ray {
-				origin: hit.point,
-				direction: reflection_target - hit.point,
-			},
-			world,
-			depth - 1,
-		)) * 0.8;
-		return Color::from(color_vec);
+		return Rc::clone(&hit.material).scatter(ray, hit)
+			.map(|(scattered, attenuation)| {
+				let attenuation_vec = Vec3::from(attenuation);
+				let scattered_color_vec = Vec3::from(ray_color(scattered, world, depth - 1));
+				Color::from(attenuation_vec * scattered_color_vec)
+			})
+			.unwrap_or(Color::default());
 	}
 
 	// Hits background
@@ -136,6 +159,20 @@ fn ray_color(ray: Ray, world: &dyn Hittable, depth: usize) -> Color {
 	};
 	Color::from(color_vec)
 }
+
+
+
+/*trait Reflection {
+	fn reflect(&self, normal: Vec3) -> Vec3;
+}
+
+struct LamberianReflection;
+
+impl Reflection for LambertianReflection {
+	fn reflect(&self, normal: Vec3) -> Vec3 {
+		normal + Vec3::random_unit_vector()
+	}
+}*/
 
 
 /*#[derive(Parser, Debug)]

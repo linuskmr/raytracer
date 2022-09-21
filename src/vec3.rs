@@ -53,7 +53,7 @@ impl Vec3 {
 		}
 	}
 
-	/// Creates a random vector in the unit sphere.
+	/// Creates a random vector in the unit sphere, i.e. its length is < 1.0.
 	///
 	/// The creation is done by generating a random vector in the unit cube and
 	/// rejecting it if it is outside the unit sphere.
@@ -64,6 +64,27 @@ impl Vec3 {
 				return random_vec;
 			}
 		}
+	}
+
+	/// Creates a random vector with length 1.
+	pub fn random_unit_vector() -> Self {
+		Self::random_in_unit_sphere().unit_vector()
+	}
+
+	/// Creates a random vector in the same hemisphere as the given normal vector.
+	pub fn random_in_hemisphere(normal: Vec3) -> Self {
+		let vec_in_unit_sphere = Self::random_in_unit_sphere();
+		let is_in_same_hemisphere = vec_in_unit_sphere.dot(normal) > 0.0;
+		if is_in_same_hemisphere { vec_in_unit_sphere } else { -vec_in_unit_sphere }
+	}
+
+	pub fn is_near_zero(&self) -> bool {
+		const EPSILON: f64 = 1e-8;
+		self.x.abs() < EPSILON && self.y.abs() < EPSILON && self.z.abs() < EPSILON
+	}
+
+	pub fn reflect(&self, normal: Vec3) -> Self {
+		*self - ((normal * 2.0) * self.dot(normal))
 	}
 }
 
