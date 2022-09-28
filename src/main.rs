@@ -77,7 +77,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 	let upper_left_corner = {
 		// TODO: I would prefer to use the positive z-axis, but I'll follow the tutorial for now.
 		//  "In order to respect the convention of a right handed coordinate system, into the screen is the negative z-axis."
-		let viewport_center = camera.origin - Vec3 { x: 0.0, y: 0.0, z: focal_length };
+		let viewport_center = camera.look_from - Vec3 { x: 0.0, y: 0.0, z: focal_length };
 		viewport_center
 			- horizontal / 2.0 // half a screen to the left
 			- vertical / 2.0 // half a screen to the top

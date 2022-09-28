@@ -3,7 +3,7 @@ use crate::{Ray, Vec3};
 #[derive(Clone, PartialEq, Debug)]
 pub struct Camera {
 	/// The position of the camera / "eye".
-	pub origin: Vec3,
+	pub look_from: Vec3,
 	/// Horizontal offset vector from the upper left corner to the upper right corner of the viewport
 	pub horizontal: Vec3,
 	/// Vertical offset vector from the upper left corner to the lower left corner of the viewport
@@ -18,9 +18,17 @@ impl Camera {
 	/// # Arguments
 	/// 
 	/// * `aspect_ratio` - The aspect ratio of the viewport (0.0..).
-	/// * `origin` - The position of the camera / "eye".
 	/// * `vertical_fov` - The vertical field of view in degrees (0.0..360.0).
-	fn new(aspect_ratio: f64, origin: Vec3, vertical_fov: f64) -> Self {
+	/// * `look_from` - The position of the camera / "eye".
+	/// * `look_at` - The position the camera is looking at.
+	/// * `vertical_up` - The up vector of the camera.
+	fn new(
+		aspect_ratio: f64,
+		vertical_fov: f64,
+		look_from: Vec3,
+		look_at: Vec3,
+		vertical_up: Vec3,
+	) -> Self {
 		assert!((0.0..).contains(&aspect_ratio));
 		assert!((0.0..360.0).contains(&vertical_fov));
 
@@ -29,25 +37,26 @@ impl Camera {
 		let h = f64::tan(theta / 2.0);
 		let viewport_height = 2.0 * h;
 		let viewport_width = aspect_ratio * viewport_height;
-		let focal_length = 1.0;
-		dbg!(viewport_width, viewport_height, focal_length);
+		dbg!(viewport_width, viewport_height);
+
+		let w = (look_from - look_at).unit_vector();
+		let u = -vertical_up.cross(w).unit_vector();
+		let v = w.cross(u);
 
 		// Eye or camera center
 		// Offset vectors from the lower upper left corner of the viewport
-		let horizontal = Vec3 { x: viewport_width, y: 0.0, z: 0.0 };
-		let vertical = Vec3 { x: 0.0, y: -viewport_height, z: 0.0 };
+		let horizontal = u * viewport_width;
+		let vertical = v * viewport_height;
 		// "Origin" of the viewport
 		let upper_left_corner = {
-			// TODO: I would prefer to use the positive z-axis, but I'll follow the tutorial for now.
-			//  "In order to respect the convention of a right handed coordinate system, into the screen is the negative z-axis."
-			let viewport_center = origin - Vec3 { x: 0.0, y: 0.0, z: focal_length };
+			let viewport_center = look_from - w;
 			viewport_center
 				- horizontal / 2.0 // half a screen to the left
 				- vertical / 2.0 // half a screen to the top
 		};
 
 		Self {
-			origin,
+			look_from,
 			horizontal,
 			vertical,
 			upper_left_corner,
@@ -64,11 +73,11 @@ impl Camera {
 		let horizontal_offset = self.horizontal * horizontal_scalar;
 		let vertical_offset = self.vertical * vertical_scalar;
 		Ray {
-			origin: self.origin,
+			origin: self.look_from,
 			direction: {
 				// A direction vector is always calculated from target minus start
 				let target = self.upper_left_corner + horizontal_offset + vertical_offset;
-				let start = self.origin;
+				let start = self.look_from;
 				target - start
 			},
 		}
@@ -77,6 +86,12 @@ impl Camera {
 
 impl Default for Camera {
 	fn default() -> Self {
-		Self::new(16.0 / 9.0, Vec3::ZERO, 90.0)
+		Self::new(
+			16.0 / 9.0,
+			90.0,
+			Vec3 { x: -2.0, y: 2.0, z: 1.0 },
+			Vec3 { x: 0.0, y: 0.0, z: -1.0 },
+			Vec3 { x: 0.0, y: 1.0, z: 0.0 },
+		)
 	}
 }
