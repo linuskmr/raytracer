@@ -19,7 +19,11 @@ impl Material for Dielectric {
 		let sin_theta = f64::sqrt(1.0 - cos_theta * cos_theta);
 
 		let cannot_refract = refraction_ratio * sin_theta > 1.0;
-		let direction = if cannot_refract {
+		// "real glass has reflectivity that varies with angle — look at a window at a steep angle and it becomes a
+		// mirror. [...] almost everybody uses a cheap and surprisingly accurate polynomial approximation by Christophe
+		// Schlick"
+		let reflect = Self::reflectance(cos_theta, refraction_ratio) > rand::random::<f64>();
+		let direction = if cannot_refract || reflect {
 			unit_direction.reflect(hit.normal)
 		} else {
 			unit_direction.refract(hit.normal, refraction_ratio)
@@ -30,5 +34,15 @@ impl Material for Dielectric {
 			direction,
 		};
 		Some((scattered, attenuation_color))
+	}
+}
+
+impl Dielectric {
+
+	/// Schlick's approximation for reflectance.
+	fn reflectance(cosine: f64, ref_idx: f64) -> f64 {
+		let mut r0 = (1.0 - ref_idx) / (1.0 + ref_idx);
+		r0 = r0 * r0;
+		r0 + (1.0 - r0) * f64::powi(1.0 - cosine, 5)
 	}
 }
