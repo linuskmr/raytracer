@@ -13,9 +13,21 @@ pub struct Camera {
 }
 
 impl Camera {
-	fn new(aspect_ratio: f64, viewport_height: f64, origin: Vec3) -> Self {
-		assert!(viewport_height > 0.0);
+	/// Create a new camera.
+	/// 
+	/// # Arguments
+	/// 
+	/// * `aspect_ratio` - The aspect ratio of the viewport (0.0..).
+	/// * `origin` - The position of the camera / "eye".
+	/// * `vertical_fov` - The vertical field of view in degrees (0.0..360.0).
+	fn new(aspect_ratio: f64, origin: Vec3, vertical_fov: f64) -> Self {
+		assert!((0.0..).contains(&aspect_ratio));
+		assert!((0.0..360.0).contains(&vertical_fov));
 
+		let theta = vertical_fov.to_radians();
+		// Scalar value of the viewport height
+		let h = f64::tan(theta / 2.0);
+		let viewport_height = 2.0 * h;
 		let viewport_width = aspect_ratio * viewport_height;
 		let focal_length = 1.0;
 		dbg!(viewport_width, viewport_height, focal_length);
@@ -65,6 +77,6 @@ impl Camera {
 
 impl Default for Camera {
 	fn default() -> Self {
-		Self::new(16.0 / 9.0, 2.0, Vec3::ZERO)
+		Self::new(16.0 / 9.0, Vec3::ZERO, 90.0)
 	}
 }

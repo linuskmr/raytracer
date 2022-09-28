@@ -37,6 +37,7 @@ impl Material for Dielectric {
 	}
 }
 
+
 impl Dielectric {
 
 	/// Schlick's approximation for reflectance.

@@ -15,7 +15,7 @@ use raytracer::Vec3;
 fn main() -> Result<(), Box<dyn Error>> {
 	// Image
 	let aspect_ratio = 16.0 / 9.0;
-	let image_width = 720 /*px*/;
+	let image_width = 480 /*px*/;
 	let image_height = (image_width as f64 / aspect_ratio) as usize;
 	let antialiasing_samples_per_pixel = 30;
 	let reflection_depth = 30;
@@ -31,7 +31,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 			albedo: Color::from(Vec3 { x: 0.7, y: 0.3, z: 0.3 })
 		});
 		let material_left: Rc<dyn Material> = Rc::new(Dielectric {
-			index_of_refraction: 1.5,
+			index_of_refraction: -0.4,
 		});
 		let material_right: Rc<dyn Material> = Rc::new(Metal {
 			albedo: Color::from(Vec3 { x: 0.8, y: 0.6, z: 0.2 }),
